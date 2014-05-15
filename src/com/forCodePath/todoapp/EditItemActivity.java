@@ -10,6 +10,7 @@ import android.widget.EditText;
 
 public class EditItemActivity extends Activity {
 	private EditText etEditItem;
+	private int status;
 	private int position;
 
 	@Override
@@ -19,6 +20,7 @@ public class EditItemActivity extends Activity {
         etEditItem = (EditText) findViewById(R.id.etEditItem);
 
 		String editItem = getIntent().getStringExtra("item");
+		status = getIntent().getIntExtra("status", 0);
 		position = getIntent().getIntExtra("pos", 0);
     	etEditItem.setText(editItem);
     	etEditItem.setSelection(etEditItem.getText().length());
@@ -31,6 +33,7 @@ public class EditItemActivity extends Activity {
     	Intent data = new Intent();
     	// Pass relevant data back as a result
     	data.putExtra("item", etName.getText().toString());
+    	data.putExtra("status", status);
     	data.putExtra("pos", position);
     	setResult(RESULT_OK, data); // set result code and bundle data for response
     	finish(); // closes the activity, pass data to parent

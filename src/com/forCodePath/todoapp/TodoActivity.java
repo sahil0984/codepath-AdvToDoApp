@@ -3,31 +3,37 @@ package com.forCodePath.todoapp;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class TodoActivity extends Activity {
-	private ArrayList<String> todoItems;
-	private ArrayList<Integer> todoMarkDone;
-	//private TodoListModel[] modelItems;
 	private ArrayList<TodoListModel> modelItems;
 
-	//private ArrayAdapter<String> todoAdapter;
+	//public TodoActivity CustomListView = null;
+	
 	private CustomAdapter todoAdapter;
 	private ListView lvItems;
+		//private TextView tvItem;
+		//private ImageView ivStatus;
 	private EditText etNewItem;
 	private final int REQUEST_CODE = 20;
 
@@ -37,19 +43,14 @@ public class TodoActivity extends Activity {
         setContentView(R.layout.activity_todo);
         etNewItem = (EditText) findViewById(R.id.etNewItem);
         lvItems = (ListView) findViewById(R.id.lvItems);
-        //readItems();
-        	todoItems = new ArrayList<String>();
-        	todoMarkDone = new ArrayList<Integer>();
-        	
-        	 modelItems = new ArrayList<TodoListModel>(); //TodoListModel[3];
-        	 //modelItems[0] = new TodoListModel("pizza", 0);
-        	 //modelItems[1] = new TodoListModel("burger", 1);
-        	 //modelItems[2] = new TodoListModel("soda", -1);
-        	 modelItems.add(new TodoListModel("pizza", 0));
-        	 modelItems.add(new TodoListModel("burge", 1));
-        	 modelItems.add(new TodoListModel("soda", -1));
+        //tvItem = (TextView) findViewById(R.id.tvItem);
+        //ivStatus = (ImageView) findViewById(R.id.ivMarkDone);
+        
+        readItems();
 
-     	CustomAdapter todoAdapter = new CustomAdapter(this, modelItems);
+        //CustomListView = this;
+        
+        todoAdapter = new CustomAdapter(this, modelItems);
 	
         //todoAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, todoItems);
         lvItems.setAdapter(todoAdapter);
@@ -62,26 +63,48 @@ public class TodoActivity extends Activity {
 
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapter, View item, int pos, long id) {
-				TodoListModel removeItem = new TodoListModel(modelItems.get(pos).todoItem.toString(), modelItems.get(pos).markDone);
 				modelItems.remove(pos);
 				todoAdapter.notifyDataSetChanged();
-				//writeItems();
+				writeItems();
 				return true;
 			}
-			
+
 		});
 
-		/*lvItems.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> adapter, View item, int pos, long id) {
-				  Intent i = new Intent(TodoActivity.this, EditItemActivity.class);
-				  i.putExtra("item", todoAdapter.getItem(pos).toString()); 
-				  i.putExtra("pos", pos); 
-				  startActivityForResult(i, REQUEST_CODE);
-			}
-			
-		});	*/		
+//		lvItems.setOnItemClickListener(new OnItemClickListener() {
+//
+//			@Override
+//			public void onItemClick(AdapterView<?> adapter, View item, final int pos, long id) {			    
+//
+//			}
+//			
+//		});		
+	}
+  
+	public void onItemClick(int mPosition) {
+        //TodoListModel tempValues = (TodoListModel) modelItems.get(mPosition);
+        
+		  Intent i = new Intent(TodoActivity.this, EditItemActivity.class);
+		  i.putExtra("item", todoAdapter.getItem(mPosition).getTodoItem().toString());
+		  i.putExtra("status", todoAdapter.getItem(mPosition).getMarkDone()); 
+		  i.putExtra("pos", mPosition); 
+		  startActivityForResult(i, REQUEST_CODE);
+        
+//        Toast.makeText(CustomListView,
+//                ""+tempValues.getTodoItem()
+//                  +"Image:"+tempValues.getMarkDone(),                 
+//                Toast.LENGTH_LONG)
+//        .show();
+	}
+	public void onStatusClick(int mPosition) {
+		int newStatus = todoAdapter.getItem(mPosition).getMarkDone();
+		newStatus = newStatus + 1;
+		if (newStatus==2) {
+			newStatus = -1;
+		}
+    	Log.v("TodoActivity", "New Status"+newStatus);
+		modelItems.set(mPosition, new TodoListModel(todoAdapter.getItem(mPosition).getTodoItem().toString(), newStatus));
+		todoAdapter.notifyDataSetChanged();
 	}
 
     @Override
@@ -89,31 +112,40 @@ public class TodoActivity extends Activity {
     	if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
     	     // Extract name value from result extras
     	     String itemName = data.getExtras().getString("item");
+    	     int status = data.getExtras().getInt("stauts");
     	     int pos = data.getExtras().getInt("pos");
    	     
-		     todoItems.set(pos, itemName);
+    	     modelItems.set(pos, new TodoListModel(itemName, status));
 		     todoAdapter.notifyDataSetChanged();
-			 //writeItems();
+			 writeItems();
     	}
     }
     
     public void onAddedItem(View v) {
     	String itemText = etNewItem.getText().toString();
-    	TodoListModel addItem = new TodoListModel(itemText,0);
-    	todoAdapter.add(addItem);
+    	TodoListModel addItem = new TodoListModel(itemText,-1); //Default status = not started
+    	modelItems.add(addItem);
 		todoAdapter.notifyDataSetChanged();
 
     	etNewItem.setText("");
-    	//writeItems();
+    	writeItems();
 	}
 
     private void readItems() {
     	File filesDir = getFilesDir();
     	File todoFile = new File(filesDir, "todo1.txt");
     	try {
-			todoItems = new ArrayList<String>(FileUtils.readLines(todoFile));
+    		modelItems = new ArrayList<TodoListModel>();
+    		List<String> readLines;
+    		readLines = new ArrayList<String>(FileUtils.readLines(todoFile));
+    		for (String str : readLines) {
+    			String tmp[] = str.split("\t");
+    			String item = tmp[0];
+    			int status = Integer.parseInt(tmp[1]);
+    			modelItems.add(new TodoListModel(item, status));
+    		}
 		} catch (IOException e) {
-			todoItems = new ArrayList<String>();
+			modelItems = new ArrayList<TodoListModel>();
 		}
 	}
     
@@ -121,7 +153,13 @@ public class TodoActivity extends Activity {
     	File filesDir = getFilesDir();
     	File todoFile = new File(filesDir, "todo1.txt");
     	try {
-			FileUtils.writeLines(todoFile, todoItems);
+    		int listSize = modelItems.size();
+    		List<String> writeLines = new ArrayList<String>();
+    		for (int i=0;i<listSize;i++) {
+    			String tmp = todoAdapter.getItem(i).getTodoItem().toString()+"\t"+todoAdapter.getItem(i).getMarkDone();
+    			writeLines.add(tmp);
+    		}
+			FileUtils.writeLines(todoFile, writeLines);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
