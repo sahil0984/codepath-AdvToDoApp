@@ -10,6 +10,7 @@ import android.widget.EditText;
 
 public class EditItemActivity extends Activity {
 	private EditText etEditItem;
+	private EditText etEditItemDetails;
 	private int status;
 	private int position;
 
@@ -18,21 +19,26 @@ public class EditItemActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_item);
         etEditItem = (EditText) findViewById(R.id.etEditItem);
+        etEditItemDetails = (EditText) findViewById(R.id.etEditItemDetails);
 
 		String editItem = getIntent().getStringExtra("item");
+		String editItemDetails = getIntent().getStringExtra("details");
 		status = getIntent().getIntExtra("status", 0);
 		position = getIntent().getIntExtra("pos", 0);
     	etEditItem.setText(editItem);
+    	etEditItemDetails.setText(editItemDetails);    	
     	etEditItem.setSelection(etEditItem.getText().length());
     	etEditItem.setFocusableInTouchMode(true);
     	etEditItem.requestFocus();
 	}
 
 	public void onSavedItem(View v) {
-		EditText etName = (EditText) findViewById(R.id.etEditItem);
+		EditText etItem = (EditText) findViewById(R.id.etEditItem);
+		EditText etItemDetails = (EditText) findViewById(R.id.etEditItemDetails);
     	Intent data = new Intent();
     	// Pass relevant data back as a result
-    	data.putExtra("item", etName.getText().toString());
+    	data.putExtra("item", etItem.getText().toString());
+    	data.putExtra("details", etItemDetails.getText().toString());
     	data.putExtra("status", status);
     	data.putExtra("pos", position);
     	setResult(RESULT_OK, data); // set result code and bundle data for response

@@ -29,13 +29,23 @@
         <requestFocus />
     </EditText>
 
+    <EditText
+        android:id="@+id/etEditItemDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/etEditItem"
+        android:ems="10"
+        android:hint="@string/details_hint"
+        android:inputType="textMultiLine" />
+
     <Button
         android:id="@+id/btnSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:onClick="onSavedItem"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
         android:text="@string/save_button_label" />
 
 </RelativeLayout>

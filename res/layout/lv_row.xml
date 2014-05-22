@@ -2,14 +2,21 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" > 
+
+<!--        <View android:id="@+id/fakeView" -->
+<!--        android:layout_width="0dp" -->
+<!--        android:layout_height="0dp"  -->
+<!--        android:layout_centerInParent="true"/> -->
     
 	 <TextView
-		 android:id="@+id/tvItem"
-		 android:layout_width="wrap_content"
-		 android:layout_height="fill_parent"
-		 android:layout_alignParentLeft="true"
-         android:layout_alignParentTop="true"
-		 android:text="" />
+	     android:id="@+id/tvItem"
+	     style="@android:style/TextAppearance.Medium"
+	     android:layout_width="wrap_content"
+	     android:layout_height="wrap_content"
+	     android:layout_alignParentLeft="true"
+	     android:layout_alignParentTop="true"
+	     android:text=""
+	     android:textStyle="bold" />
 
      <ImageView
          android:id="@+id/ivMarkDone"
@@ -18,6 +25,14 @@
          android:layout_alignParentRight="true"
          android:layout_alignParentTop="true"
          android:contentDescription="@string/mark_done_desc"
-         android:src="@drawable/ic_launcher" />  
+         android:src="@drawable/ic_launcher" />
+
+     <TextView
+         android:id="@+id/tvItemDetails"
+         android:layout_width="wrap_content"
+         android:layout_height="match_parent"
+         android:layout_alignParentBottom="true"
+         android:layout_alignParentLeft="true"
+         android:layout_below="@+id/tvItem" />
 
 </RelativeLayout>

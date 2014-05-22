@@ -15,15 +15,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class TodoActivity extends Activity {
 	private ArrayList<TodoListModel> modelItems;
@@ -70,40 +64,27 @@ public class TodoActivity extends Activity {
 			}
 
 		});
-
-//		lvItems.setOnItemClickListener(new OnItemClickListener() {
-//
-//			@Override
-//			public void onItemClick(AdapterView<?> adapter, View item, final int pos, long id) {			    
-//
-//			}
-//			
-//		});		
 	}
   
-	public void onItemClick(int mPosition) {
-        //TodoListModel tempValues = (TodoListModel) modelItems.get(mPosition);
-        
+	public void onItemClick(int mPosition) {       
 		  Intent i = new Intent(TodoActivity.this, EditItemActivity.class);
 		  i.putExtra("item", todoAdapter.getItem(mPosition).getTodoItem().toString());
+		  i.putExtra("details", todoAdapter.getItem(mPosition).getTodoItemDetails().toString());
 		  i.putExtra("status", todoAdapter.getItem(mPosition).getMarkDone()); 
 		  i.putExtra("pos", mPosition); 
 		  startActivityForResult(i, REQUEST_CODE);
-        
-//        Toast.makeText(CustomListView,
-//                ""+tempValues.getTodoItem()
-//                  +"Image:"+tempValues.getMarkDone(),                 
-//                Toast.LENGTH_LONG)
-//        .show();
 	}
 	public void onStatusClick(int mPosition) {
 		int newStatus = todoAdapter.getItem(mPosition).getMarkDone();
+		String tmpItem = todoAdapter.getItem(mPosition).getTodoItem().toString();
+		String tmpItemDetails = todoAdapter.getItem(mPosition).getTodoItemDetails().toString();
+
 		newStatus = newStatus + 1;
 		if (newStatus==2) {
 			newStatus = -1;
 		}
     	Log.v("TodoActivity", "New Status"+newStatus);
-		modelItems.set(mPosition, new TodoListModel(todoAdapter.getItem(mPosition).getTodoItem().toString(), newStatus));
+		modelItems.set(mPosition, new TodoListModel(tmpItem, tmpItemDetails, newStatus));
 		todoAdapter.notifyDataSetChanged();
 	}
 
@@ -111,29 +92,63 @@ public class TodoActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
     	     // Extract name value from result extras
-    	     String itemName = data.getExtras().getString("item");
-    	     int status = data.getExtras().getInt("stauts");
-    	     int pos = data.getExtras().getInt("pos");
+    		String itemName = data.getExtras().getString("item");
+    		String itemDetails = data.getExtras().getString("details");
+    	    int status = data.getExtras().getInt("status");
+    	    int pos = data.getExtras().getInt("pos");
    	     
-    	     modelItems.set(pos, new TodoListModel(itemName, status));
-		     todoAdapter.notifyDataSetChanged();
-			 writeItems();
+    	    modelItems.set(pos, new TodoListModel(itemName, itemDetails, status));
+		    todoAdapter.notifyDataSetChanged();
+			writeItems();
     	}
     }
     
     public void onAddedItem(View v) {
     	String itemText = etNewItem.getText().toString();
-    	TodoListModel addItem = new TodoListModel(itemText,-1); //Default status = not started
+    	String itemDetailsText = "";
+    	TodoListModel addItem = new TodoListModel(itemText, itemDetailsText, -1); //Default status = not started
     	modelItems.add(addItem);
 		todoAdapter.notifyDataSetChanged();
 
     	etNewItem.setText("");
     	writeItems();
 	}
+    
+    public void onSortItems(View v) {
+    	
+    	ArrayList<TodoListModel> statusRed = new ArrayList<TodoListModel>(); //-1
+    	ArrayList<TodoListModel> statusGreen = new ArrayList<TodoListModel>(); //1
+    	ArrayList<TodoListModel> statusGrey = new ArrayList<TodoListModel>(); //0
+    	
+    	int listIndx = modelItems.size();
+    	
+    	for (int i=0; i<listIndx; i++) {
+    		int itemStatus = modelItems.get(i).getMarkDone();
+    		String itemName = modelItems.get(i).getTodoItem().toString();
+    		String itemDetails = modelItems.get(i).getTodoItemDetails().toString();
 
+    		TodoListModel listItem = new TodoListModel(itemName, itemDetails, itemStatus);
+    		if ( itemStatus == -1 ) {
+    			statusRed.add(listItem);
+    		} else if ( itemStatus == 1 ) {
+    			statusGreen.add(listItem);
+    		} else {
+    			statusGrey.add(listItem);
+    		}
+    	} 	
+    	
+    	modelItems.clear();
+
+    	modelItems.addAll(statusGrey);
+    	modelItems.addAll(statusRed);
+    	modelItems.addAll(statusGreen);
+		todoAdapter.notifyDataSetChanged();
+    	writeItems();
+	}
+    
     private void readItems() {
     	File filesDir = getFilesDir();
-    	File todoFile = new File(filesDir, "todo1.txt");
+    	File todoFile = new File(filesDir, "todo3.txt");
     	try {
     		modelItems = new ArrayList<TodoListModel>();
     		List<String> readLines;
@@ -141,8 +156,9 @@ public class TodoActivity extends Activity {
     		for (String str : readLines) {
     			String tmp[] = str.split("\t");
     			String item = tmp[0];
-    			int status = Integer.parseInt(tmp[1]);
-    			modelItems.add(new TodoListModel(item, status));
+    			String details = tmp[1];
+    			int status = Integer.parseInt(tmp[2]);
+    			modelItems.add(new TodoListModel(item, details, status));
     		}
 		} catch (IOException e) {
 			modelItems = new ArrayList<TodoListModel>();
@@ -151,12 +167,14 @@ public class TodoActivity extends Activity {
     
     private void writeItems() {
     	File filesDir = getFilesDir();
-    	File todoFile = new File(filesDir, "todo1.txt");
+    	File todoFile = new File(filesDir, "todo3.txt");
     	try {
     		int listSize = modelItems.size();
     		List<String> writeLines = new ArrayList<String>();
     		for (int i=0;i<listSize;i++) {
-    			String tmp = todoAdapter.getItem(i).getTodoItem().toString()+"\t"+todoAdapter.getItem(i).getMarkDone();
+    			String tmp = todoAdapter.getItem(i).getTodoItem().toString()+"\t"
+    						+todoAdapter.getItem(i).getTodoItemDetails().toString()+"\t"
+    						+todoAdapter.getItem(i).getMarkDone();
     			writeLines.add(tmp);
     		}
 			FileUtils.writeLines(todoFile, writeLines);

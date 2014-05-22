@@ -10,5 +10,7 @@
     <string name="edit_item_label">Edit Item Below:</string>
     <string name="save_button_label">Save</string>
     <string name="mark_done_desc">Mark Done</string>
+    <string name="sort_list_desc">Sort item list</string>
+    <string name="details_hint">Add details here...</string>
 
 </resources>
