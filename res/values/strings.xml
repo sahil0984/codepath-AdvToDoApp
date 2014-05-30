@@ -12,5 +12,6 @@
     <string name="mark_done_desc">Mark Done</string>
     <string name="sort_list_desc">Sort item list</string>
     <string name="details_hint">Add details here...</string>
+    <string name="email_list_desc">Send todo list using email</string>
 
 </resources>

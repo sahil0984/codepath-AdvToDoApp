@@ -50,4 +50,15 @@
         android:contentDescription="@string/sort_list_desc"
         android:src="@android:drawable/stat_notify_sync" />
 
+    <ImageButton
+        android:id="@+id/ibtnEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onEmailItems"
+        android:layout_alignBottom="@+id/ibtnSort"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/ibtnSort"
+        android:contentDescription="@string/email_list_desc"
+        android:src="@android:drawable/sym_action_email" />
+
 </RelativeLayout>

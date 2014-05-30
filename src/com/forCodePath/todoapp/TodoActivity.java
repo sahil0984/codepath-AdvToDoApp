@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class TodoActivity extends Activity {
 	private ArrayList<TodoListModel> modelItems;
@@ -49,6 +50,9 @@ public class TodoActivity extends Activity {
         //todoAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, todoItems);
         lvItems.setAdapter(todoAdapter);
         setupListViewListener();
+        //To add List of Lists
+//        List<List<Individual>> group = new ArrayList<List<Individual>>(4);
+
     }
 
 
@@ -145,6 +149,44 @@ public class TodoActivity extends Activity {
 		todoAdapter.notifyDataSetChanged();
     	writeItems();
 	}
+    
+    public void onEmailItems(View v) {
+
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        // prompts email clients only
+        emailIntent.setType("message/rfc822");
+        
+        String emailBody = new String();
+    	int listIndx = modelItems.size();
+    	for (int i=0; i<listIndx; i++) {
+    		int itemStatus = modelItems.get(i).getMarkDone();
+    		String statusText = new String(); 
+    		if (itemStatus == -1) {
+    			statusText = "Not Started";
+    		} else if ( itemStatus == 1 ) {
+    			statusText = "Done";
+    		} else {
+    			statusText = "In progress";
+    		}
+    		emailBody = emailBody + "** " + modelItems.get(i).getTodoItem().toString() + " - " + statusText + "\n"
+    			      + "\t" + modelItems.get(i).getTodoItemDetails().toString() + "\n\n";
+    	}
+        
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{""});
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "My Todo List");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, emailBody);
+        
+        try {
+        	// the user can choose the email client
+        	startActivity(Intent.createChooser(emailIntent, "Choose an email client from..."));
+        } catch (android.content.ActivityNotFoundException ex) {
+        	Toast.makeText(TodoActivity.this, "No email client installed.",
+        	Toast.LENGTH_LONG).show();
+        }	
+
+
+
+    }
     
     private void readItems() {
     	File filesDir = getFilesDir();
