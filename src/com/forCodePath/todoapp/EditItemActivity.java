@@ -7,10 +7,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 public class EditItemActivity extends Activity {
 	private EditText etEditItem;
 	private EditText etEditItemDetails;
+	private Spinner spnEditItemStatus;
 	private int status;
 	private int position;
 
@@ -20,11 +22,20 @@ public class EditItemActivity extends Activity {
 		setContentView(R.layout.activity_edit_item);
         etEditItem = (EditText) findViewById(R.id.etEditItem);
         etEditItemDetails = (EditText) findViewById(R.id.etEditItemDetails);
+        
+        
+        spnEditItemStatus = (Spinner) findViewById(R.id.spnStatus);
+
 
 		String editItem = getIntent().getStringExtra("item");
 		String editItemDetails = getIntent().getStringExtra("details");
 		status = getIntent().getIntExtra("status", 0);
 		position = getIntent().getIntExtra("pos", 0);
+		
+		spnEditItemStatus.setSelection(status+1);
+		//2 Done, 1 In Prog, 0 Not Started
+		//1       0          -1
+		
     	etEditItem.setText(editItem);
     	etEditItemDetails.setText(editItemDetails);    	
     	etEditItem.setSelection(etEditItem.getText().length());
@@ -36,10 +47,11 @@ public class EditItemActivity extends Activity {
 		EditText etItem = (EditText) findViewById(R.id.etEditItem);
 		EditText etItemDetails = (EditText) findViewById(R.id.etEditItemDetails);
     	Intent data = new Intent();
+    	int newStatus = (int) spnEditItemStatus.getSelectedItemId();
     	// Pass relevant data back as a result
     	data.putExtra("item", etItem.getText().toString());
     	data.putExtra("details", etItemDetails.getText().toString());
-    	data.putExtra("status", status);
+    	data.putExtra("status", newStatus-1);
     	data.putExtra("pos", position);
     	setResult(RESULT_OK, data); // set result code and bundle data for response
     	finish(); // closes the activity, pass data to parent

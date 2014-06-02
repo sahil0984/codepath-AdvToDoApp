@@ -48,4 +48,13 @@
         android:onClick="onSavedItem"
         android:text="@string/save_button_label" />
 
+    <Spinner
+        android:id="@+id/spnStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/etEditItemDetails"
+        android:entries="@array/country_arrays"
+        android:prompt="@string/status_prompt" />
+
 </RelativeLayout>

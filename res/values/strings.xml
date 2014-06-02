@@ -13,5 +13,12 @@
     <string name="sort_list_desc">Sort item list</string>
     <string name="details_hint">Add details here...</string>
     <string name="email_list_desc">Send todo list using email</string>
-
+    <string name="status_prompt">Choose a status</string>
+ 
+    <string-array name="country_arrays">
+        <item>Not started</item>
+        <item>In progress</item>
+        <item>Done</item>
+    </string-array>
+ 
 </resources>
