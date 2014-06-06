@@ -50,18 +50,9 @@ public class CustomAdapter extends ArrayAdapter<TodoListModel> {
 	    else
 	    	imageView.setImageResource(R.drawable.status_green);     
   
-	    item.setTag(new Integer(position));
-	    item.setOnClickListener(new OnClickListener() { 
-	    	@Override
-            public void onClick(View v) {
-            	Integer myPosition = (Integer) v.getTag();
-            	TodoActivity sct = (TodoActivity)activity;
-            	sct.onItemClick(myPosition);
-            	Log.v("CustomAdapter", "Text clicked");
-            }
-	    });
-	    itemDetails.setTag(new Integer(position));
-	    itemDetails.setOnClickListener(new OnClickListener() { 
+	    
+	    convertView.setTag(new Integer(position));
+	    convertView.setOnClickListener(new OnClickListener() { 
 	    	@Override
             public void onClick(View v) {
             	Integer myPosition = (Integer) v.getTag();

@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -38,6 +39,13 @@ public class TodoActivity extends Activity {
         setContentView(R.layout.activity_todo);
         etNewItem = (EditText) findViewById(R.id.etNewItem);
         lvItems = (ListView) findViewById(R.id.lvItems);
+        //lvItems.setOnItemClickListener(new OnItemClickListener() {
+		//	@Override
+		//	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+		//			long arg3) {
+		//		Toast.makeText(TodoActivity.this, "Hello", Toast.LENGTH_SHORT).show();
+		//	}
+		//});
         //tvItem = (TextView) findViewById(R.id.tvItem);
         //ivStatus = (ImageView) findViewById(R.id.ivMarkDone);
         
